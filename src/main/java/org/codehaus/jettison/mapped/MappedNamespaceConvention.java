@@ -269,17 +269,7 @@ public class MappedNamespaceConvention implements Convention, NamespaceContext {
     }
 
     public String createAttributeKey( String p, String ns, String local ) {
-
-        StringBuilder builder = new StringBuilder();
-        if ( !this.supressAtAttributes ) {
-            builder.append( attributeKey );
-        }
-        String jns = getJSONNamespace(p, ns);
-        //        String jns = getPrefix(ns);
-        if ( jns != null && jns.length() != 0 ) {
-            builder.append( jns ).append( getNamespaceSeparator() );
-        }
-        return builder.append( local ).toString();
+        return createKey(p, ns, local, true);
     }
 
     private String getJSONNamespace(String providedPrefix, String ns ) {
@@ -298,8 +288,14 @@ public class MappedNamespaceConvention implements Convention, NamespaceContext {
     }
 
     public String createKey( String p, String ns, String local ) {
+        return createKey(p, ns, local, false);
+    }
 
+    private String createKey(String p, String ns, String local, boolean attribute) {
         StringBuilder builder = new StringBuilder();
+        if (attribute && !supressAtAttributes) {
+            builder.append(attributeKey);
+        }
         String jns = getJSONNamespace(p, ns);
         //        String jns = getPrefix(ns);
         if ( jns != null && jns.length() != 0 ) {

@@ -59,12 +59,17 @@ public class AbstractDOMDocumentSerializer {
 
 			XMLEventWriter eventWriter = writerFactory
 					.createXMLEventWriter(output);
-			eventWriter.add(eventReader);
-			eventWriter.close();
+			writeEventsAndClose(eventReader, eventWriter);
 		} catch (XMLStreamException ex) {
 			IOException ioex = new IOException("Cannot serialize: " + el);
 			ioex.initCause(ex);
 			throw ioex;
 		}
+	}
+
+	static void writeEventsAndClose(XMLEventReader eventReader, XMLEventWriter eventWriter)
+			throws XMLStreamException {
+		eventWriter.add(eventReader);
+		eventWriter.close();
 	}
 }

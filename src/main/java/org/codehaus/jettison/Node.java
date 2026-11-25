@@ -85,15 +85,22 @@ public class Node {
     }
 
     public String getNamespaceURI(int index) {
+        Object ns = getNamespaceAt(index, namespaces.values().iterator());
+        return ns == null ? "" : ns.toString();
+    }
+
+    public String getNamespacePrefix(int index) {
+        return getNamespaceAt(index, namespaces.keySet().iterator()).toString();
+    }
+
+    private Object getNamespaceAt(int index, Iterator values) {
         if (index < 0 || index >= getNamespaceCount()) {
             throw new IllegalArgumentException("Illegal index: element has "+getNamespaceCount()+" namespace declarations");
         }
-        Iterator itr = namespaces.values().iterator();
         while (--index >= 0) {
-            itr.next();
+            values.next();
         }
-        Object ns = itr.next();
-        return ns == null ? "" : ns.toString();
+        return values.next();
     }
 
     public String getNamespacePrefix(String URI) {
@@ -108,17 +115,6 @@ public class Node {
             result = parent.getNamespacePrefix(URI);
         }
         return result;
-    }
-
-    public String getNamespacePrefix(int index) {
-        if (index < 0 || index >= getNamespaceCount()) {
-            throw new IllegalArgumentException("Illegal index: element has "+getNamespaceCount()+" namespace declarations");
-        }
-        Iterator itr = namespaces.keySet().iterator();
-        while (--index >= 0) {
-            itr.next();
-        }
-        return itr.next().toString();
     }
 
     public void setNamespaces(Map namespaces) {

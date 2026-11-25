@@ -64,8 +64,7 @@ public class AbstractDOMDocumentParser {
 	         XMLOutputFactory outputFactory = XMLOutputFactory.newInstance();
 	         XMLEventWriter eventWriter = outputFactory.createXMLEventWriter(baos);
 	         
-	         eventWriter.add(eventReader);
-	         eventWriter.close();
+	         AbstractDOMDocumentSerializer.writeEventsAndClose(eventReader, eventWriter);
 	         
 	         // This parsing step should not be necessary, if we could output to a DOMResult
 	         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
