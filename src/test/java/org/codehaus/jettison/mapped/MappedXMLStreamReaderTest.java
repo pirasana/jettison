@@ -15,6 +15,9 @@
  */
 package org.codehaus.jettison.mapped;
 
+import static org.codehaus.jettison.XMLStreamReaderTestSupport.assertNext;
+import static org.codehaus.jettison.XMLStreamReaderTestSupport.assertNextName;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +39,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
 
+import org.codehaus.jettison.XMLStreamReaderTestSupport;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONTokener;
@@ -50,16 +54,11 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testStreamReaderNullTextAsString() throws Exception {
@@ -73,16 +72,11 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention(c);
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("null", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "null");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testStreamReaderNullTextAsNull() throws Exception {
@@ -95,16 +89,11 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention(c);
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals(null, reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, null);
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
 
     public void testMultipleChildren() throws Exception {
@@ -117,24 +106,16 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child2", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child2");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testMultipleChildrenWithSameName() throws Exception {
@@ -147,24 +128,16 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child11", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child11");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testNestedArrayOfChildren() throws Exception {
@@ -180,58 +153,36 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("first sub2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "subchild2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "first sub2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "subchild2");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("second sub2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "subchild2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "second sub2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "subchild2");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("third sub2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("subchild2", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "subchild2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "third sub2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "subchild2");
               
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
                   
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("sub1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "sub1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("sub2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "sub2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child2", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child2", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child2");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child2");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
 
     
@@ -246,21 +197,8 @@ public class MappedXMLStreamReaderTest extends TestCase {
         xtoj.put("http://foo/", "foo");
         MappedNamespaceConvention con = new MappedNamespaceConvention(new Configuration(xtoj));
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
-        
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals("http://foo/", reader.getName().getNamespaceURI());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals("http://foo/", reader.getName().getNamespaceURI());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("childtext", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals("http://foo/", reader.getName().getNamespaceURI());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
-        assertEquals("http://foo/", reader.getName().getNamespaceURI());
+
+        assertNamespacedReader(reader);
     }
     
     public void testDefaultNamespace() throws Exception {
@@ -273,20 +211,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
 				new Configuration(xtoj));
 		XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
 
-		assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-		assertEquals("root", reader.getName().getLocalPart());
-		assertEquals("http://foo/", reader.getName().getNamespaceURI());
-		assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-		assertEquals("child1", reader.getName().getLocalPart());
-		assertEquals("http://foo/", reader.getName().getNamespaceURI());
-		assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-		assertEquals("childtext", reader.getText());
-		assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-		assertEquals("child1", reader.getName().getLocalPart());
-		assertEquals("http://foo/", reader.getName().getNamespaceURI());
-		assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-		assertEquals("root", reader.getName().getLocalPart());
-		assertEquals("http://foo/", reader.getName().getNamespaceURI());
+		assertNamespacedReader(reader);
 	}    
     
     public void testArrayWithSameJSONObjects() throws Exception {
@@ -300,35 +225,25 @@ public class MappedXMLStreamReaderTest extends TestCase {
     	MappedXMLInputFactory factory = new MappedXMLInputFactory(config);
     	XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(str));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Names", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Names");
                 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("1", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "1");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("2", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "2");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Names", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Names");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
     	
     }
     
@@ -339,29 +254,21 @@ public class MappedXMLStreamReaderTest extends TestCase {
     	MappedXMLInputFactory factory = new MappedXMLInputFactory(config);
     	XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(str));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
                 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("1", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "1");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("2", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "2");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
     	
     }
     
@@ -381,65 +288,45 @@ public class MappedXMLStreamReaderTest extends TestCase {
     	MappedXMLInputFactory factory = new MappedXMLInputFactory(config);
     	XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(str));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Names", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Names");
                 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("11", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "11");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("12", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "12");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("21", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "21");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("22", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "22");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Names", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Names");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
     	
     }
     
@@ -465,41 +352,29 @@ public class MappedXMLStreamReaderTest extends TestCase {
     	MappedXMLInputFactory factory = new MappedXMLInputFactory(config);
     	XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(str));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
                 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("1", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "1");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Name", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Name");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "theBook");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("Bar", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "Bar");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("2", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "2");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("Bar", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "Bar");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
     	
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("theBook", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "theBook");
     }
     
     
@@ -516,56 +391,39 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
                 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("relationships", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "relationships");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("friend", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "friend");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("relationships", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "relationships");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("emails", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "emails");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("f@foo.com", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "f@foo.com");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("emails", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "emails");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("emails", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "emails");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "value");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("b@bar.com", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "b@bar.com");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("value", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "value");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("emails", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "emails");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
 
     }
     
@@ -587,56 +445,39 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("relationship", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "relationship");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("friend", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "friend");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("relationship", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "relationship");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("email", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "email");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("f@foo.com", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "f@foo.com");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("email", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "email");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("relationship", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "relationship");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("relative", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "relative");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("relationship", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "relationship");
 
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("email", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "email");
 
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("b@foo.com", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "b@foo.com");
 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("email", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "email");
                 
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
 
     }
     
@@ -648,15 +489,11 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
     
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
         assertEquals(null, reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testGetElementTextNull() throws Exception {
@@ -665,8 +502,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
     	Configuration conf = new Configuration();
     	MappedNamespaceConvention con = new MappedNamespaceConvention(conf);
     	XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
-    	assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-    	assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
     	assertEquals(null, reader.getElementText());
     	assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
     }
@@ -680,23 +516,8 @@ public class MappedXMLStreamReaderTest extends TestCase {
                            "} }");
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
-        
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        
-        assertEquals(1, reader.getAttributeCount());
-        assertEquals("att", reader.getAttributeLocalName(0));
-        assertEquals("", reader.getAttributeNamespace(0));
-        assertEquals("attvalue", reader.getAttributeValue(0));
-        
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+
+        assertRootAttributeAndChild(reader);
     }
     
     public void testAttributesAsElements() throws Exception {
@@ -715,28 +536,21 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention(c);
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
         assertEquals(1, reader.getAttributeCount());
         assertEquals("att", reader.getAttributeLocalName(0));
         assertEquals("", reader.getAttributeNamespace(0));
         assertEquals("attvalue", reader.getAttributeValue(0));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("att2", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("attvalue", reader.getText());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "att2");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "attvalue");
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     public void testElementNameWithDot() throws Exception {
@@ -750,14 +564,10 @@ public class MappedXMLStreamReaderTest extends TestCase {
         
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());       
         assertEquals("org.codehaus.jettison.mapped.root", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("org.codehaus.jettison.mapped.child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("org.codehaus.jettison.mapped.child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("org.codehaus.jettison.mapped.child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("org.codehaus.jettison.mapped.root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "org.codehaus.jettison.mapped.child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "org.codehaus.jettison.mapped.child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "org.codehaus.jettison.mapped.child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "org.codehaus.jettison.mapped.root");
     }
     
     
@@ -773,22 +583,19 @@ public class MappedXMLStreamReaderTest extends TestCase {
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());       
         assertEquals("foo", reader.getName().getLocalPart());
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("true", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "true");
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
         
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());       
         assertEquals("foo2", reader.getName().getLocalPart());
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("3.14", reader.getText()); 
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "3.14");
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());        
         
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());       
         assertEquals("foo3", reader.getName().getLocalPart());
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("17", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "17");
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
     }
     
@@ -802,22 +609,17 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention();
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
         assertEquals(1, reader.getAttributeCount());
         assertEquals("att", reader.getAttributeLocalName(0));
         assertEquals("", reader.getAttributeNamespace(0));
         assertEquals("1", reader.getAttributeValue(0));
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
     }
     
     // issue 29
@@ -838,8 +640,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
         assertEquals("", reader.getAttributeNamespace(0));
         assertEquals("string", reader.getAttributeValue(0));
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("$", reader.getName().getLocalPart());
+        assertNextName(this, reader, XMLStreamReader.CHARACTERS, "$");
         assertEquals("1", reader.getText());
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
         
@@ -868,8 +669,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
         assertEquals("string", reader.getAttributeValue(0));
         
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("$", reader.getName().getLocalPart());
+        assertNextName(this, reader, XMLStreamReader.CHARACTERS, "$");
         assertEquals("1", reader.getText());
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
         
@@ -888,8 +688,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
 
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());       
         assertEquals("root", reader.getName().getLocalPart());     
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("json string", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "json string");
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
         
         
@@ -907,23 +706,8 @@ public class MappedXMLStreamReaderTest extends TestCase {
         conf.setAttributeKey("!");
         MappedNamespaceConvention con = new MappedNamespaceConvention(conf);
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
-        
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
-        
-        assertEquals(1, reader.getAttributeCount());
-        assertEquals("att", reader.getAttributeLocalName(0));
-        assertEquals("", reader.getAttributeNamespace(0));
-        assertEquals("attvalue", reader.getAttributeValue(0));
-        
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("child1", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("child1", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart()); 
+
+        assertRootAttributeAndChild(reader);
     }    
     
     //issue 50
@@ -936,8 +720,7 @@ public class MappedXMLStreamReaderTest extends TestCase {
         MappedNamespaceConvention con = new MappedNamespaceConvention(conf);
         XMLStreamReader reader = new MappedXMLStreamReader(obj, con);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("root", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
         
         assertEquals("test", reader.getElementText());
         assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
@@ -1082,25 +865,33 @@ public class MappedXMLStreamReaderTest extends TestCase {
         assertEquals(sizeBefore, ((List<?>) field.get(convention)).size());
     }
 
+    private void assertNamespacedReader(XMLStreamReader reader) throws Exception {
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertEquals("http://foo/", reader.getName().getNamespaceURI());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertEquals("http://foo/", reader.getName().getNamespaceURI());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "childtext");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertEquals("http://foo/", reader.getName().getNamespaceURI());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
+        assertEquals("http://foo/", reader.getName().getNamespaceURI());
+    }
+
+    private void assertRootAttributeAndChild(XMLStreamReader reader) throws Exception {
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "root");
+        assertEquals(1, reader.getAttributeCount());
+        assertEquals("att", reader.getAttributeLocalName(0));
+        assertEquals("", reader.getAttributeNamespace(0));
+        assertEquals("attvalue", reader.getAttributeValue(0));
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "child1");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "root");
+    }
+
     private static String readEvents(MappedXMLInputFactory factory, String json) throws Exception {
         XMLStreamReader reader = factory.createXMLStreamReader(new StringReader(json));
-        StringBuilder sb = new StringBuilder();
-        while (reader.hasNext()) {
-            int event = reader.next();
-            if (event == XMLStreamConstants.START_ELEMENT) {
-                sb.append('<').append(reader.getLocalName());
-                for (int i = 0; i < reader.getAttributeCount(); i++) {
-                    sb.append(' ').append(reader.getAttributeLocalName(i))
-                        .append("=\"").append(reader.getAttributeValue(i)).append('"');
-                }
-                sb.append('>');
-            } else if (event == XMLStreamConstants.CHARACTERS) {
-                sb.append(reader.getText());
-            } else if (event == XMLStreamConstants.END_ELEMENT) {
-                sb.append("</").append(reader.getLocalName()).append('>');
-            }
-        }
-        return sb.toString();
+        return XMLStreamReaderTestSupport.readEvents(reader);
     }
 
     // https://github.com/jettison-json/jettison/issues/9

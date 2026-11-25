@@ -17,11 +17,12 @@ import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.TestCase;
+
+import org.codehaus.jettison.XMLStreamReaderTestSupport;
 
 /**
  * JSON structures the reader can't map to XML events must fail with an
@@ -74,22 +75,6 @@ public class MappedXMLStreamReaderUnsupportedStructureTest extends TestCase {
 
     private static String readEvents(Configuration config, String json) throws Exception {
         XMLStreamReader reader = new MappedXMLInputFactory(config).createXMLStreamReader(new StringReader(json));
-        StringBuilder sb = new StringBuilder();
-        while (reader.hasNext()) {
-            int event = reader.next();
-            if (event == XMLStreamConstants.START_ELEMENT) {
-                sb.append('<').append(reader.getLocalName());
-                for (int i = 0; i < reader.getAttributeCount(); i++) {
-                    sb.append(' ').append(reader.getAttributeLocalName(i))
-                        .append("=\"").append(reader.getAttributeValue(i)).append('"');
-                }
-                sb.append('>');
-            } else if (event == XMLStreamConstants.CHARACTERS) {
-                sb.append(reader.getText());
-            } else if (event == XMLStreamConstants.END_ELEMENT) {
-                sb.append("</").append(reader.getLocalName()).append('>');
-            }
-        }
-        return sb.toString();
+        return XMLStreamReaderTestSupport.readEvents(reader);
     }
 }

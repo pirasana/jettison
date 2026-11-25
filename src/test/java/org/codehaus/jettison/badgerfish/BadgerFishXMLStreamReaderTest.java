@@ -15,6 +15,8 @@
  */
 package org.codehaus.jettison.badgerfish;
 
+import static org.codehaus.jettison.XMLStreamReaderTestSupport.assertNext;
+
 import java.io.StringReader;
 import java.util.Iterator;
 
@@ -32,15 +34,12 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
         JSONObject obj = new JSONObject("{ \"alice\": { \"$\" : \"bob\" } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
         assertEquals(-1, reader.getLocation().getLineNumber());
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("bob", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "bob");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
         assertEquals(XMLStreamReader.END_DOCUMENT, reader.next());
     }
    
@@ -50,25 +49,17 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
                         " \"david\": { \"$\": \"edgar\"} } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("charlie", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "bob");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "charlie");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "bob");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("david", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("edgar", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("david", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "david");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "edgar");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "david");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
     
     public void testTwoChildrenWithSameName() throws Exception {
@@ -76,25 +67,17 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
         "{ \"alice\": { \"bob\" : [ {\"$\": \"charlie\" }, {\"$\": \"david\" } ] } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("charlie", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "bob");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "charlie");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "bob");
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("david", reader.getText());
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "bob");
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "david");
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "bob");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
 
     public void testAttributeAndText() throws Exception {
@@ -102,19 +85,16 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
         "{ \"alice\": { \"$\" : \"bob\", \"@charlie\" : \"david\" } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("bob", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "bob");
         
         assertEquals(1, reader.getAttributeCount());
         assertEquals("charlie", reader.getAttributeLocalName(0));
         assertEquals("david", reader.getAttributeValue(0));
         assertEquals("", reader.getAttributeNamespace(0));
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
 
     public void testDefaultNamespace() throws Exception {
@@ -122,11 +102,9 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
             "{ \"alice\": { \"$\" : \"bob\", \"@xmlns\": { \"$\" : \"http:\\/\\/some-namespace\"} } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("bob", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "bob");
         
         assertEquals(0, reader.getAttributeCount());
         assertEquals(1, reader.getNamespaceCount());
@@ -134,8 +112,7 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
         assertEquals("", reader.getNamespacePrefix(0));
         assertEquals("http://some-namespace", reader.getNamespaceURI(""));
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
     
     public void testPrefixedNamespace() throws Exception {
@@ -143,11 +120,9 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
             "{ \"alice\": { \"$\" : \"bob\", \"@xmlns\": { \"$\" : \"http:\\/\\/some-namespace\", \"charlie\" : \"http:\\/\\/some-other-namespace\" } } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("bob", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "bob");
         
         assertEquals(0, reader.getAttributeCount());
         assertEquals(2, reader.getNamespaceCount());
@@ -162,8 +137,7 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
 //        assertEquals("charlie", reader.getNamespacePrefix(1));
         assertEquals("http://some-other-namespace", reader.getNamespaceURI("charlie"));
          
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
     
 
@@ -191,8 +165,7 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
               "} }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
         assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
         assertEquals("bob", reader.getLocalName());
@@ -208,11 +181,9 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
 //        assertEquals("charlie", reader.getNamespacePrefix(1));
         assertEquals("http://some-other-namespace", reader.getNamespaceURI("charlie"));
        
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("david", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "david");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("bob", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "bob");
         
         // ----
         
@@ -233,23 +204,19 @@ public class BadgerFishXMLStreamReaderTest extends TestCase {
         assertEquals("http://some-other-namespace", reader.getNamespaceURI("charlie"));
        
         
-        assertEquals(XMLStreamReader.CHARACTERS, reader.next());
-        assertEquals("frank", reader.getText());
+        assertNext(this, reader, XMLStreamReader.CHARACTERS, "frank");
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("edgar", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "edgar");
         
         
-        assertEquals(XMLStreamReader.END_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.END_ELEMENT, "alice");
     }
 
     public void testElementWithInvalidValue() throws Exception {
         JSONObject obj = new JSONObject("{ \"alice\": { \"foo\" : \"bob\" } }");
         AbstractXMLStreamReader reader = new BadgerFishXMLStreamReader(obj);
         
-        assertEquals(XMLStreamReader.START_ELEMENT, reader.next());
-        assertEquals("alice", reader.getName().getLocalPart());
+        assertNext(this, reader, XMLStreamReader.START_ELEMENT, "alice");
         
         try {
         	reader.next();
